@@ -1,8 +1,21 @@
 
+# After already using docker on the Graduate Program Lab environment 
+# I installed Oracle VM Virtual Box on a Windows 10 Laptop to practice more
+# There I have set up Ubuntu 23.10
+# I had to enter BIOS (for hp enter through esc and then F10) and 
+# enable the Virtualization Technology 
+
 # Installing Docker
+sudo su - 
+apt install docker.io
 
-# I will install a new Linux VM on another Windows Machine first tomorrow, 
-# and install Docker there,
-# this is another practice to get more comftable with those steps.
+apt install containerd
+apt update
 
+systemctl status docker
 
+# List docker images
+docker images
+
+# List docker containers 
+docker ps
