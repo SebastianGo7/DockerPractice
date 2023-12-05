@@ -1,0 +1,49 @@
+# Volumes
+
+# Location where docker containers get a temporary storage
+ls /var/lib/docker/volumes/
+
+# Create a container with a volume which 
+# is located on the host on /opt
+# and located on the container on /etc/contvol
+docker run -d --name containerwithvolume -p 8000:8080 -v /opt:/etc/contvol sebastiango/firstimage:2.0
+
+# Login to container, go to volume and create a file
+docker exec -it containerwithvolume bash
+cd /etc/contvol
+touch testfile.txt
+
+# Check if testfile has been created on host
+ls /opt
+
+# Stop and delete container, then create it again
+docker stop containerwithvolume
+docker rm containerwithvolume
+docker run -d --name containerwithvolume -p 8000:8080 -v /opt:/etc/contvol sebastiango/firstimage:2.0
+
+# Check that the testfile.txt is still inside and it is there
+docker exec -it containerwithvolume bash
+cd /etc/contvol
+ls
+
+# --------------------------------------
+# Private Registry
+
+# Registry image is pulled from Dockerhub
+docker run -d --name first -p 5000:5000 registry:2
+
+# Check that the private repository is still empty
+curl localhost:5000/v2/_catalog
+
+# Tag firstimage with repository name
+docker tag sebastiango/firstimage:2.0 localhost:5000/firstimage:2.0
+
+# Push image to private Repository image container
+docker push localhost:5000/firstimage:2.0
+
+# Check that pushed image is in the private repository image container
+curl localhost:5000/v2/_catalog
+
+# Pull image, and get message that it is already up to date
+docker pull localhost:5000/firstimage:2.0
+
