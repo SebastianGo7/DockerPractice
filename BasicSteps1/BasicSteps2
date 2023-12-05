@@ -1,0 +1,46 @@
+
+# logging into container
+docker exec -it hellocontainer bash
+
+# Displaying docker CPU, Memory Usage etc
+docker stats
+
+# Copy File from Host to inside the container
+docker cp Dockerfile hellocontainer:/tmp
+
+# Copy Directory form Container to current directory of Host
+docker cp hellocontainer:/tmp .
+
+# Create new image by commiting actual container to a new image version tag
+docker commit hellocontainer firstimage:2.0
+
+# Docker inspect gives information about layers etc
+docker inspect hellocontainer
+
+# Layers are stored in this directory
+ls /var/lib/docker/image/overlay2/layerdb/sha256
+
+#----------------------------------------
+# Docker Hub
+
+# Login to Docker hub account
+docker login
+Username: sebastiango
+Password: ...
+
+# Tag image
+docker tag firstimage:2.0 sebastiango/firstimage:2.
+
+# Push image to Registry
+docker push sebastiango/firstimage:2.0
+
+# Stop Container and Delete it
+docker stop 868e539f95c8
+docker rm 868e539f95c8
+
+# Remove images 
+docker rmi -f ea9811bc21c8
+
+# Docker pull from Docker Hub
+docker pull sebastiango/firstimage:2.0
+
