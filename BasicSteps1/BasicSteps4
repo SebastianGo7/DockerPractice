@@ -19,3 +19,53 @@ docker info
 # see network interfaces information
 ifconfig
 
+# Creating own costum bridge network and check it
+docker network create mydockernetwork --subnet=192.168.1.0/8
+docker network ls
+docker network inspect mydockernetwork
+
+# Creating 4 Containers, two in bridge, two in created mydockernetwork
+docker run -d --name cont0 -p 8080:80 nginx:latest
+docker run -d --name cont1 -p 8081:80 nginx:latest
+docker run -d --name cont2 -p 8082:80 --network mydockernetwork nginx:latest
+docker run -d --name cont3 -p 8083:80 --network mydockernetwork nginx:latest
+
+
+# Check ip address
+docker network inspect bridge
+ 
+# It is possible to ping cont1 from cont0
+docker exec -it cont0 bash
+# inside 
+apt update
+apt install iputils-ping
+ping 172.17.0.3
+
+# Check ip address
+docker network inspect mydockernetwork
+
+# It is possible to ping cont3 from cont2 but not to cont0 nore cont1
+docker exec -it cont2 bash
+# inside
+apt update
+apt install iputils-ping
+ping 192.0.0.3
+
+apt install net-tools
+ifconfig
+# only one network is connected on eth0
+exit
+
+# Connect bridge Network to cont3
+docker network connect bridge cont3
+
+# Login to from cont3 to cont0 and cont1 is possible now
+docker exec -it cont3 bash
+
+# also now eth0 and eth 1 networks are shown here
+if config
+
+# To disconnect cont3
+docker network disconnect bridge cont3
+
+
