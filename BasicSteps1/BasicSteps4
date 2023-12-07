@@ -1,0 +1,21 @@
+# Networks
+
+# Show actual networks
+docker network ls
+
+# get more details, as for examples the container using it
+docker network inspect bridge
+
+# Create nginx container pulling it
+docker run -d --name testcont -p 8080:80 nginx:latest
+
+# Save nginx image as tar file
+docker save nginx > nginx.tar
+ls
+
+# Check general info
+docker info
+
+# see network interfaces information
+ifconfig
+
