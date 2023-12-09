@@ -1,0 +1,47 @@
+# Docker Swarm Practice
+
+# Initializes Docker Swarm, return token for the workers to join
+docker swarm init
+# shown as return:
+docker swarm join --token SWMTKN-1-5u79hceegw4se2icuewcq4je6xnxprzne54nic434v6aq2gx12-50v1b7h3cpz3l5r72cvpr87mj 192.168.1.9:2377
+
+# Show all nodes, the leader as well as the worker nodes
+docker swarm node ls
+
+
+# docker remove previous services
+docker stop dockerpractice_web_1 dockerpractice_redis_1
+docker rm dockerpractice_web_1 dockerpractice_redis_1
+
+# docker create a service in the Replicated Mode
+docker service create --name practice_service --replicas=6 sebastiango/firstimage:2.0
+
+# Check Replicated Services Status
+docker service ls
+# 6 services have been created, previously I created them on three nodes on the lab environment
+
+# Displays the following information of the services: ID, Name, Image, Node, Desired State, Current State, Error, Ports
+docker service ps practice_service
+
+# Remove that first Service
+docker service rm practice_service
+
+
+# Create a service in the Global Mode
+docker service create --name practice_service --mode global sebastiango/firstimage:2.0
+
+# Displays the following information of the service: ID, Name, Image, Node, Desired State, Current State, Error, Ports
+docker service ps practice_service
+
+# Docker remove global service
+docker service rm practice_service
+
+# Check actual docker networks
+docker network ls
+
+# Remove all unused networks
+docker network prune
+
+# Create Overlay network, not that useful here as only one node
+docker network create overlaynetworkA -d overlay
+
