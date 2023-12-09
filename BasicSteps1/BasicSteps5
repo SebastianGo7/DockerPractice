@@ -45,3 +45,44 @@ docker network prune
 # Create Overlay network, not that useful here as only one node
 docker network create overlaynetworkA -d overlay
 
+# Check actual docker networks
+docker network ls
+
+# Create Replica Service to practice Scale it
+docker service create --name practice_service --replicas=6 sebastiango/firstimage:2.0
+docker service ps practice_service
+docker service scale practice_service=12
+docker service ps practice_service
+# 12 Services are running now on the master node
+
+
+# Lock cluster
+docker swarm update --autolock=true
+# the following key is returned
+SWMKEY-1-t8gt5x/J6f+32435aX/LGOfbi3onKgkPJucIPne7R6g
+# Restart docker service for lock effect to take place
+systemctl restart docker
+# Trying to use cluster, it creates an error message
+docker service ls
+# Unlock cluster with key
+docker swarm unlock-key
+
+# Rotate key and new key is saved here
+docker swarm unlock-key --rotate
+SWMKEY-1-erCDDUiJQAKg1mQzI7B5IefIxGsuI1Jrq5gQsQPDBCk
+
+# disable autolock key
+docker swarm update --autolock=false
+systemctl restart docker
+
+# Check actual node, and drain it, see how the availability is set to Drain etc
+docker node ls
+docker service ls
+docker service ps practice_service
+docker node update --availability drain sebastian-1-2
+docker service ps practice_service
+
+
+
+
+
