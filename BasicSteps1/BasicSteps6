@@ -27,3 +27,109 @@ docker service create -d --name nginxservwithvolume --replicas 11 --publish targ
 docker service ls
 docker service ps nginxservwithvolume
 
+#
+# Docker Stack Practice
+
+# Remove previous containers
+docker ps -a
+docker rm contwithvolume2
+docker ps -a
+
+# Node was on Drain, set back to Active, remove running service
+docker node update --availability active sebastian-1-2
+docker service rm nginqservwithvolume
+
+# Create Registry container
+docker docker run -d --name private -p 5000:5000 registry:2
+docker ps
+
+# Call Registry to check it is empty, it returns an empty registry
+curl localhost:5000/v2/_catalog
+
+
+# Create directory with similar files to previous practice
+mkdir stack_practice
+cd stackpractice
+ls
+
+cp /root/dockerpractice/app.py .
+cp /root/dockerpractice/Dockerfile.py .
+cp /root/dockerpractice/Dockerfile .
+cp /root/dockerpractice/requirements.txt .
+cp /root/dockerpractice/docker-compose.yaml .
+
+
+ls
+
+# Check files also to have them here
+vim app.py
+# Inside:
+from flask import Flask
+from redis import Redis
+import os
+import socket
+
+app = Flask(__name__)
+redis = Redis(host=os.environ.get('RESIS_HOST', 'redis'), port=6379)
+
+@app.route('/')
+def hello():
+    redis.incr('hits')
+    return 'Hello everybody, I got hit %s times and my hostname is %s. \n' % (redis.get('hits'),socket.gethostname())
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+vim Dockerfile
+# inside:
+FROM python:2.7
+COPY . /tmp
+RUN pip install -r /tmp/requirements.txt
+EXPOSE 5000
+CMD ["python", "/tmp/app.py"]
+
+
+vim requirements.txt
+# inside:
+flask
+redis
+
+
+vim docker-compose.yaml
+# inside:
+version: "2"
+services:
+  web:
+    build: .
+    image: localhost:5000/web:1.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - /opt:/etc/lala
+    links:
+      - redis
+    networks:
+      - mydockernetwork
+  redis:
+    image: redis:latest
+    expose:
+      - 6379
+    networks:
+      - mydockernetwork
+networks:
+  mydockernetwork:
+
+
+# Build the docker compose file, last lines return that the built is successfull, and tagged successfully on localhost:5000/web1.0
+docker-compose build
+
+# Pull redis image
+docker pull redis
+docker images
+
+# Push docker-compose
+docker-compose push
+
+# Call Registry to check it, it now returns to have the just created "web" image
+curl localhost:5000/v2/_catalog
