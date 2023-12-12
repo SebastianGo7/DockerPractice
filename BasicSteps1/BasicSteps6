@@ -1,0 +1,29 @@
+# Docker Volumes Practice
+
+# Check actual services and delete them
+docker service ls
+docker service rm practice_service
+
+
+# Create new Volume after checking actual volumes
+docker volume ls
+docker volume create practice_volume
+docker volume ls
+
+# Check location where volume is stored
+ls /var/lib/docker/volumes/ 
+
+# Create new container with that attached Volume
+docker run -d --name contwithvolume -p 8080:80 -v myvolume:/etc/okvol nginx:latest
+
+# Create new container with bind mount volume 
+docker run -d --name contwithbindmount -p 8081:80 -v /opt/etc/okvol nginx:latest
+
+
+# Attach volume to a replicated service after removing previous containers
+docker stop contwithbindmount contwithvolume
+docker rm contwithbindmount contwithvolume
+docker service create -d --name nginxservwithvolume --replicas 11 --publish target=80,published=8080 --mount source=practice_volume,target=/app nginx:latest
+docker service ls
+docker service ps nginxservwithvolume
+
