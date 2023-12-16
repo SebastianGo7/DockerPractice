@@ -133,3 +133,50 @@ docker-compose push
 
 # Call Registry to check it, it now returns to have the just created "web" image
 curl localhost:5000/v2/_catalog
+
+# Add more desired replicas in docker-compose, also change the version to 3 as it is required for this stack, also change port
+vim docker-compose
+# inside:
+version: "3"
+services:
+  web:
+    build: .
+    image: localhost:5000/web:1.0
+    ports:
+      - "5001:5000"
+    deploy:
+      replicas: 4
+    volumes:
+      - /opt:/etc/lala
+    links:
+      - redis
+    networks:
+      - mydockernetwork
+  redis:
+    image: redis:latest
+    deploy:
+      replicas: 3
+    expose:
+      - 6379
+    networks:
+      - mydockernetwork
+networks:
+  mydockernetwork:
+
+
+# Deploy Stack
+# Return displayes that the network stackpractice_mydockernetwork is created as well as the services stackpractice_web and stackpractice_redis
+docker stack deploy --compose-file docker-compose.yaml stackpractice
+
+# Check more details of actual stack, 3 redis containers and 4 web containers have been created and are running
+# On the lab they were created on 3 different nodes (1 master and 2 worker nodes)
+docker stack services stackpractice
+
+# Show more details of both services
+docker service ps stackpractice_redis
+docker service ps stackpractice_web
+
+# Delete the created stack, the services are removed
+docker stack rm stackpractice
+docker ps
+
