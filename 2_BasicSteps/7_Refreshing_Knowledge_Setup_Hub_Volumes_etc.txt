@@ -128,4 +128,168 @@ docker container ls
 docker container exec -it d772e sh
 ls -l /root/ 
 # yes the container is still there
+
 ----------------------------------------------
+
+# Challenge #5
+# Start a Docker container with Nginx, running in the background on port 80. 
+# Access the Nginx server from another computer using a web browser. 
+# Look at the server logs and connect directly to the Nginx container.
+
+docker container run -d -p 80:80 nginx 
+docker container ls
+
+ip address show
+# note down ip address of enp0s3:	192.168.88.76
+
+# When loading 192.168.88.76, the Welcome to nginx page is displayed
+
+# Display nginx server logs
+docker logs 1f3e0f9e2c1e 
+docker container exec -it 1f3e0f9e2c1e bash
+exit
+
+----------------------------------------------
+
+# Challenge #6
+# Run two Nginx and two Apache containers, each on random ports. 
+# Use a web browser to access both web servers. 
+# Stop all running containers and remove them.
+
+docker container run -d -P nginx
+docker container run -d -P nginx
+docker container run -d -P httpd
+docker container run -d -P httpd
+
+docker container ls
+# write down the ports 32771, 32770, 32769, 32768
+
+ip a
+# to find out 192.168.88.76
+
+# within Mozilla Firefox, I opened all 4 start pages
+
+# stop all containers and remove them
+docker container stop $(docker container ls -a -q)
+docker container rm $(docker container ls -a -f status=exited -q)
+
+----------------------------------------------
+
+# Challenge #7
+# Run an Ubuntu container and access its shell. 
+# Install OpenSSH server inside the container, 
+# create a new user with a password, then exit without stopping the container. 
+# Find the container's IP address and 
+# connect to it via SSH using the newly created user.
+
+docker run -d --name ch7ubuntu ubuntu:latest sleep 1000
+docker exec -it ch7ubuntu bash
+
+# inside:
+apt update
+apt install -y openssh-server
+
+service ssh start
+
+service ssh status
+useradd -m -s /bin/bash newuser99
+password newuser99
+exit
+
+docker container ls
+docker container inspect ch7ubuntu | grep -i ipaddress
+
+ping 172.17.0.2
+# yes working
+
+ssh newuser99@172.17.0.2
+# Yes login worked
+
+----------------------------------------------
+
+# Challenge #8
+# Take the Ubuntu container you modified in the previous challenge, 
+# save it as a new image named myubuntu with a custom tag. 
+# Start a new container from this image and ensure the SSH server is working. 
+# Upload your myubuntu image to Docker Hub.
+
+docker container ls
+
+socker stop b6b092ecb802
+
+# Commit changes to the new image with the tag custom
+docker commit -m "OpenSSH installed" b6b092ecb802 sebastiango/ch7ubuntu:custom
+
+docker image ls
+
+# starting new container
+docker container run -d sebastiango/ch7ubuntu:custom
+docker exec -it 8e40fa8ea501 bash
+
+service ssh status	
+# here it is not running
+	
+service ssh start
+service ssh status
+# now sshd is running
+exit
+
+# logging into docker with credentials, username is sebastiango
+docker login
+
+# push image into Docker Hub
+docker image push sebastiango/ch7ubuntu:custom
+# After login on dockerhub.com I can see that image pushed there
+
+----------------------------------------------
+
+# Challenge #9
+# Search Docker Hub for an Apache image, then customize it using its Dockerfile. 
+# Build the custom image locally and test it by starting a container.
+# first searching for apache in dockerhub, use link of latest to github
+# you also need a file called httpd-foreground from github
+# there get the rawcode links
+
+# search for apache, choose first httpd, go to latest, 
+# click on raw code and copy the dockerfile sourcecode link, download it with wget
+wget https://raw.githubusercontent.com/docker-library/httpd/4bbf4e38bd43edd3a6aa832eef382b8cfe06cb10/2.4/Dockerfile
+
+# on github, also go to httpd/2.4/httpd-foreground
+# click on raw code and copy that rawcode link, download it with wget
+wget https://github.com/docker-library/httpd/blob/4bbf4e38bd43edd3a6aa832eef382b8cfe06cb10/2.4/httpd-foreground
+ls 
+
+chmod +x httpd-foreground
+docker image build -t myapache:1.0 .
+
+docker image ls 
+# new image is listed now
+
+# running new container with that apache image
+docker container run -d -P apache:1.0
+docker container ls -a
+
+----------------------------------------------
+
+# Challenge #10
+# Create a Docker volume named webapp1, inspect its details, 
+# copy files into it, and mount it to an Apache web server container. 
+# Verify you can access these files through a web browser.
+
+# Createing volume webapp1, and inspecting it
+docker volume create webapp1
+docker volume ls
+docker volume inspect webapp1
+
+# Saving system information and creating a container with that volume
+uname -a
+uname -a > /var/lib/docker/volumes/webapp1/_data/index.html
+docker container run -d -p 8080:80 -v webapp1:/usr/local/apache2/htdocs httpd
+docker container ls
+
+# get the ip of enp0s3 network interface
+ip a
+
+# entering ip into mozilla with port 8080
+# there the systeminfo of uname -a is displayed
+---------------------------------------------------
