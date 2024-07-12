@@ -1,7 +1,7 @@
 Docker Challenges to refresh Docker knowledge
 
+# Challenges inspired by Andrei Dumitrescu course: Learn Linux by Doing with 5 Projects
 ---------------------------------------------------
-
 Setting up a new Ubuntu Virtual Machine: 22.04.4-desktop-amd
 Ubuntu Config
 
@@ -9,9 +9,6 @@ Your Name:	user_999
 Computer Name: 	user999_VirtualBox
 username: 	user_999
 passwrod	****	jkl		jkl
-
-
-
 ---------------------------------------------------
 # Installing Docker on Ubuntu
 
@@ -69,3 +66,66 @@ http://10.0.2.15/
 > standard page that it works
 
 ---------------------------------------------------
+
+# A webserver is run in a docker container
+docker container run -d -p 8080:80 --name mysite nginx
+
+# mozilla firefox loads nginx startpage
+# through containers ip 10.0.2.15:8080
+
+docker container run -d -p 8081:80 --name mysite1 nginx
+
+# Running an apache webserver
+docker container run -d -p 8082:80 --name mysite2 httpd
+
+# Check docker images and running containers
+docker image ls
+docker ps
+
+# remove all stopped containers
+docker container rm $(docker container ls -a -f status=exited -q)
+# removing all other containers
+docker container rm -f $(docker container ls -a -q)
+
+----------------------------------------------
+
+# Wording of challenges changed of source of these challenges:
+
+# Challenge #1
+# Using Docker, find out how to manage containers and run them.
+docker container --help
+docker container run --help
+
+----------------------------------------------
+
+# Challenge #2
+# Search Docker Hub for an image named mariadb.
+docker search mariadb
+
+----------------------------------------------
+
+# Challenge #3
+# Download the latest version of the Alpine Linux image and list all images you've downloaded.
+docker pull alpine:edge
+docker image ls
+
+----------------------------------------------
+
+# Challenge #4
+# Launch a container from the Alpine Linux image. 
+# Go inside the container and create a new file called a.txt 
+# in the /root directory. Exit the container without stopping it. 
+# Check if the file a.txt is still there when you re-enter the container.
+
+docker container run -it alpine:edge
+# Creating the new file inside
+touch /root/a.txt
+ls -l /root/
+
+# Exit the container without stopping it with Ctrl+P+Q
+
+docker container ls 
+docker container exec -it d772e sh
+ls -l /root/ 
+# yes the container is still there
+----------------------------------------------
