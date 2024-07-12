@@ -1,0 +1,71 @@
+Docker Challenges to refresh Docker knowledge
+
+---------------------------------------------------
+
+Setting up a new Ubuntu Virtual Machine: 22.04.4-desktop-amd
+Ubuntu Config
+
+Your Name:	user_999
+Computer Name: 	user999_VirtualBox
+username: 	user_999
+passwrod	****	jkl		jkl
+
+
+
+---------------------------------------------------
+# Installing Docker on Ubuntu
+
+# Official Docker Installation Guide:
+https://docs.docker.com/engine/install/ubuntu/
+
+# uninstalling any old
+sudo apt remove docker docker.io containerd runc
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+
+# Install Docker images
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl status docker
+sudo docker container run hello-world
+sudo docker image ls
+# docker is enabled and this image was pulled successfully
+
+docker --version
+> 27.0.3
+
+# add user to docker group
+sudo usermod -aG docker user_999
+
+--------------------------------------------------
+
+# Running and testing apache webserver
+sudo docker container run -P httpd
+
+sudo --login
+# to avoid using sudo
+
+# Create httpd docker container and start it
+docker container create -p 80:80 httpd
+docker container ls -a
+docker container start b4276c1826cf
+#  docker run = docker create and docker start
+
+# on Mozilla Firefox
+http://10.0.2.15/
+> standard page that it works
+
+---------------------------------------------------
