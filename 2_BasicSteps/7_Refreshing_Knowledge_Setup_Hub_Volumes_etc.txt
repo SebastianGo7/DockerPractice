@@ -1,6 +1,6 @@
 Docker Challenges to refresh Docker knowledge
 
-# Challenges inspired by Andrei Dumitrescu course: Learn Linux by Doing with 5 Projects
+# Challenges inspired by Andrei Dumitrescu course: Learn Linux by Doing
 ---------------------------------------------------
 Setting up a new Ubuntu Virtual Machine: 22.04.4-desktop-amd
 Ubuntu Config
